@@ -12,10 +12,13 @@ selfcheck:
 
 check: selfcheck test lint
 
+delete-build:
+	rm -r dist
+
 build: check
 	poetry build
 
 package-install:
 	pip3 install --user dist/*.whl
 
-.PHONY: install test lint selfcheck check build package-install
+.PHONY: install test lint selfcheck check build package-install delete-build

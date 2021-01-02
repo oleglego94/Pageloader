@@ -9,7 +9,7 @@ PageLoader is a command line utility that downloads pages from the Internet and 
 ## Installation
 "page-loader" requires Python 3.6+ to run.
 ```
-$ pip install -i 
+
 ```
 ## Usage
 ```
