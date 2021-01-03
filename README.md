@@ -8,9 +8,7 @@
 PageLoader is a command line utility that downloads pages from the Internet and stores them on your computer.
 ## Installation
 "page-loader" requires Python 3.6+ to run.
-```
-
-```
+[![asciicast](https://asciinema.org/a/PWDzMbV27SsT63DwbJ9StlK9x.svg)](https://asciinema.org/a/PWDzMbV27SsT63DwbJ9StlK9x)
 ## Usage
 ```
 usage: page-loader [options] <url>
