@@ -12,9 +12,6 @@ selfcheck:
 
 check: selfcheck test lint
 
-delete-build:
-	rm -r dist
-
 build: check
 	poetry build
 
