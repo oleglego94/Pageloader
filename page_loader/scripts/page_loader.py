@@ -1,12 +1,13 @@
 from page_loader.cli import get_parser
-from page_loader import download_page
+from page_loader import download
 
 MSG = "Page was successfully downloaded into "
 
 
 def main():
     args = get_parser()
-    print(MSG + download_page(args.url, args.output))
+    path = download(args.url, args.output)
+    print(MSG + "'{}'".format(path))
 
 
 if __name__ == "__main__":

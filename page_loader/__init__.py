@@ -1,6 +1,6 @@
-from page_loader.downloading import download_page
+from page_loader.downloading import download
 
 
 __all__ = (  # noqa: WPS410
-    "download_page",
+    "download",
 )
