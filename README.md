@@ -24,5 +24,7 @@ Options:
                         output dir (default: "/home/oleg_g/python-project-lvl3")
   -h, --help            display help for command
   ```
-# How to download any page 
+# Download page 
 [![asciicast](https://asciinema.org/a/nx8ZSJkU89uLF9wEpMGx2s1qb.svg)](https://asciinema.org/a/nx8ZSJkU89uLF9wEpMGx2s1qb)
+# Download page and resources
+[![asciicast](https://asciinema.org/a/t8l29tCN8NpNafAt8Taes6tO4.svg)](https://asciinema.org/a/t8l29tCN8NpNafAt8Taes6tO4)
