@@ -13,6 +13,27 @@ def test_get_domain():
 @pytest.mark.parametrize(
     "url, domain, result",
     [
+        (
+            "https:///assets/menu.css",
+            DOMAIN,
+            "https:///assets/menu.css",
+        ),
+        ("//test.com/v3/", DOMAIN, "//test.com/v3/"),
+        ("/packs/js/runtime.js", DOMAIN, "http://test.com/packs/js/runtime.js"),
+        (
+            "http://test.com/professions/nodejs",
+            DOMAIN,
+            "http://test.com/professions/nodejs",
+        ),
+    ],
+)
+def test_normalize_link(url, domain, result):
+    assert resources.normalize_link(url, domain) == result
+
+
+@pytest.mark.parametrize(
+    "url, domain, result",
+    [
         ("https://cdn2.hexlet.io/assets/menu.css", DOMAIN, False),
         ("https://test.com/v3/", DOMAIN, False),
         ("http://test.com/packs/js/runtime.js", DOMAIN, True),

@@ -5,12 +5,22 @@ from page_loader import io
 from page_loader.downloading import download_page, download_resources
 
 URL = "http://test.com"
+URL_content = io.read_file("tests/fixtures/test_page.html")
+css_url = "http://test.com/assets/application.css"
+css_content = io.read_file("tests/fixtures/files/test.css")
+html_url = "http://test.com/courses"
+html_content = io.read_file("tests/fixtures/files/test.html")
+png_url = "http://test.com/assets/professions/nodejs.png"
+png_content = io.read_file("tests/fixtures/files/test.png")
+js_url = "http://test.com/packs/js/runtime.js"
+js_content = io.read_file("tests/fixtures/files/test.js")
+
 RESOURCES = {
-    URL: "tests/fixtures/test_page.html",
-    "http://test.com/assets/application.css": "tests/fixtures/files/test.css",
-    "http://test.com/courses": "tests/fixtures/files/test.html",
-    "http://test.com/assets/professions/nodejs.png": "tests/fixtures/files/test.png",  # noqa: E501
-    "http://test.com/packs/js/runtime.js": "tests/fixtures/files/test.js",
+    URL: URL_content,
+    css_url: css_content,
+    html_url: html_content,
+    png_url: png_content,
+    js_url: js_content,
 }
 
 
@@ -26,14 +36,11 @@ def test_download_page_():
 def test_download_resources():
     with TemporaryDirectory() as tempdir:
         with requests_mock.Mocker() as mock:
-
-            for url, content_path in RESOURCES.items():
-                response = io.read_file(content_path)
-                if isinstance(response, bytes):
-                    mock.get(url, content=response)
+            for url, content in RESOURCES.items():
+                if isinstance(content, bytes):
+                    mock.get(url, content=content)
                 else:
-                    mock.get(url, text=response)
-
+                    mock.get(url, text=content)
             page_path = download_page(URL, tempdir)
             resources_path = download_resources(page_path, URL, tempdir)
 
