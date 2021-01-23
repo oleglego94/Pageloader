@@ -19,7 +19,7 @@ def test_get_domain():
             "https:///assets/menu.css",
         ),
         ("//test.com/v3/", DOMAIN, "//test.com/v3/"),
-        ("/packs/js/runtime.js", DOMAIN, "http://test.com/packs/js/runtime.js"),
+        ("/packs/runtime.js", DOMAIN, "http://test.com/packs/runtime.js"),
         (
             "http://test.com/professions/nodejs",
             DOMAIN,
