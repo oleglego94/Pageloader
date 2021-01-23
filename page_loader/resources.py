@@ -20,23 +20,25 @@ def get_local_resources(html_path, directory, url):
     domain = get_domain(url)
     soup = make_soup(html_path)
     for resource in RESOURCES.keys():
+        tags = soup.find_all(resource)
         attr = RESOURCES[resource]
-        for tag in soup.find_all(resource):
-            link = tag.get(attr)
-            normal_link = normalize_link(link, domain)
-            if not is_local(normal_link, domain):
-                continue
-            else:
-                path, rel_path = make_file_path(normal_link, directory)
-                save(normal_link, path)
-                logging.info(
-                    f"{normal_link} was successfully downloaded into '{rel_path}'"  # noqa: E501
-                )
-                tag[attr] = rel_path
+        get_resource(tags, attr, domain, directory)
 
-    new_html = soup.prettify(formatter="html5")
-    io.write_file(new_html, html_path, "w")
-    logging.info(f"Links in {html_path} were successfully changed")
+    return soup.prettify(formatter="html5")
+
+
+def get_resource(tags, attr, domain, directory):
+    for tag in tags:
+        link = tag.get(attr)
+        normal_link = normalize_link(link, domain)
+        if not is_local(normal_link, domain):
+            continue
+        else:
+            path, rel_path = make_file_path(normal_link, directory)
+            save(normal_link, path)
+            logging.info(f"{normal_link} was successfully downloaded into '{rel_path}'")
+            tag[attr] = rel_path
+    return tags
 
 
 def get_domain(url):
