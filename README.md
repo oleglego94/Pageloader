@@ -28,3 +28,5 @@ Options:
 [![asciicast](https://asciinema.org/a/nx8ZSJkU89uLF9wEpMGx2s1qb.svg)](https://asciinema.org/a/nx8ZSJkU89uLF9wEpMGx2s1qb)
 # Download page and resources
 [![asciicast](https://asciinema.org/a/t8l29tCN8NpNafAt8Taes6tO4.svg)](https://asciinema.org/a/t8l29tCN8NpNafAt8Taes6tO4)
+# Logging
+[![asciicast](https://asciinema.org/a/xBd5LzrS01LSHEvk7OYhpq2lg.svg)](https://asciinema.org/a/xBd5LzrS01LSHEvk7OYhpq2lg)
