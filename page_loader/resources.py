@@ -1,15 +1,19 @@
+import logging
 import os
 from bs4 import BeautifulSoup
 from urllib import parse
 from page_loader import io
 from page_loader.saving import save
 from page_loader.naming import make_name
+from page_loader.logging import setup_logging
 
 RESOURCES = {
     "img": "src",
     "link": "href",
     "script": "src",
 }
+
+setup_logging()
 
 
 def get_local_resources(html_path, directory, url):
@@ -25,11 +29,14 @@ def get_local_resources(html_path, directory, url):
             else:
                 path, rel_path = make_file_path(normal_link, directory)
                 save(normal_link, path)
+                logging.info(
+                    f"{normal_link} was successfully downloaded into '{rel_path}'"  # noqa: E501
+                )
                 tag[attr] = rel_path
 
     new_html = soup.prettify(formatter="html5")
     io.write_file(new_html, html_path, "w")
-    return
+    logging.info(f"Links in {html_path} were successfully changed")
 
 
 def get_domain(url):
