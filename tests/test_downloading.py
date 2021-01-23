@@ -28,10 +28,11 @@ def test_download_resources():
         with requests_mock.Mocker() as mock:
 
             for url, content_path in RESOURCES.items():
-                if url.endswith((".png", ".jpg")):
-                    response = io.read_file(content_path, "rb")
                 response = io.read_file(content_path)
-                mock.get(url, text=response)
+                if isinstance(response, bytes):
+                    mock.get(url, content=response)
+                else:
+                    mock.get(url, text=response)
 
             page_path = download_page(URL, tempdir)
             resources_path = download_resources(page_path, URL, tempdir)
