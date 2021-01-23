@@ -18,4 +18,7 @@ build: check
 package-install:
 	pip3 install --user dist/*.whl
 
+package-uninstall:
+	pip3 uninstall dist/*.whl
+
 .PHONY: install test lint selfcheck check build package-install delete-build
