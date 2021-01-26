@@ -1,5 +1,7 @@
+import pytest
 import os
 import requests_mock
+import requests.exceptions as RequestException
 from tempfile import TemporaryDirectory
 from page_loader import io
 from page_loader.downloading import download_page, download_resources
@@ -51,3 +53,49 @@ def test_download_resources():
             "tests/fixtures/modified_test_page.html", "r"
         ) as sample:
             assert modified_html.read() == sample.read()
+
+
+def test_download_page_in_unfound_directory():
+    with requests_mock.Mocker() as mock:
+        mock.get(URL, text="test")
+        with pytest.raises(OSError):
+            download_page(URL, "some/path")
+
+
+def test_download_page_with_code_404():
+    with TemporaryDirectory() as tempdir:
+        with requests_mock.Mocker() as mock:
+            mock.get(URL, status_code=404)
+            with pytest.raises(RequestException.HTTPError):
+                download_page(URL, tempdir)
+
+
+def test_download_page_with_no_connection():
+    with TemporaryDirectory() as tempdir:
+        with requests_mock.Mocker() as mock:
+            mock.get(URL, exc=RequestException.ConnectionError)
+            with pytest.raises(RequestException.ConnectionError):
+                download_page(URL, tempdir)
+
+
+def test_download_page_with_existing_name():
+    with TemporaryDirectory() as tempdir:
+        with requests_mock.Mocker() as mock:
+            mock.get(URL, text="text")
+            with pytest.raises(OSError):
+                download_page(URL, tempdir)
+                download_page(URL, tempdir)
+
+
+def test_download_resources_with_existing_directory():
+    with TemporaryDirectory() as tempdir:
+        with requests_mock.Mocker() as mock:
+            for url, content in RESOURCES.items():
+                if isinstance(content, bytes):
+                    mock.get(url, content=content)
+                else:
+                    mock.get(url, text=content)
+            with pytest.raises(OSError):
+                page_path = download_page(URL, tempdir)
+                download_resources(page_path, URL, tempdir)
+                download_resources(page_path, URL, tempdir)
