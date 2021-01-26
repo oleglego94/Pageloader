@@ -30,3 +30,5 @@ Options:
 [![asciicast](https://asciinema.org/a/t8l29tCN8NpNafAt8Taes6tO4.svg)](https://asciinema.org/a/t8l29tCN8NpNafAt8Taes6tO4)
 # Logging
 [![asciicast](https://asciinema.org/a/xBd5LzrS01LSHEvk7OYhpq2lg.svg)](https://asciinema.org/a/xBd5LzrS01LSHEvk7OYhpq2lg)
+# Error handling
+[![asciicast](https://asciinema.org/a/RyKaNG1fIuP3dqyY8d7Nw0Mei.svg)](https://asciinema.org/a/RyKaNG1fIuP3dqyY8d7Nw0Mei)
