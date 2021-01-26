@@ -6,6 +6,7 @@ from page_loader.cli import DEFAULT_DIR
 from page_loader.naming import make_name
 from page_loader.resources import get_local_resources
 from page_loader.saving import save
+from page_loader.io import create_directory
 
 setup_logging()
 
@@ -22,6 +23,8 @@ def download(url, directory=DEFAULT_DIR):
 def download_page(source, storage):
     html_name = make_name(source, ".html")
     html_path = os.path.join(storage, html_name)
+    if os.path.exists(html_path):
+        raise OSError(f"File exists: '{html_path}'")
     save(source, html_path)
     logging.info(f"{source} was successfully downloaded into '{html_name}'")
     return os.path.abspath(html_path)
@@ -30,7 +33,7 @@ def download_page(source, storage):
 def download_resources(html_path, source, storage):
     resources_dir = make_name(source, "_files")
     resources_path = os.path.join(storage, resources_dir)
-    os.mkdir(resources_path)
+    create_directory(resources_path)
     logging.info(f"{resources_dir} was successfully created")
     new_html = get_local_resources(html_path, resources_path, source)
     rewrite_html(new_html, html_path)
