@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "hexlet_code"
+name = "hexlet-code"
 version = "0.1.0"
 description = "PageLoader is a command line utility that downloads pages from the Internet and stores them on your computer."
 authors = ["Oleg Gahverdiev <olegik94b@gmail.com>"]
