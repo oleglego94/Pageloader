@@ -12,6 +12,7 @@ packages = [
 python = "^3.6"
 requests = "^2.25.1"
 beautifulsoup4 = "^4.9.3"
+progress = "^1.5"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
@@ -19,6 +20,7 @@ pytest = "^6.1.0"
 pytest-cov = "^2.10.1"
 black = "^20.8b1"
 requests-mock = "^1.8.0"
+isort = "^5.7.0"
 
 [tool.poetry.scripts]
 page-loader = "page_loader.scripts.page_loader:main"

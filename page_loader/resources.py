@@ -1,10 +1,13 @@
 import logging
 import os
-from bs4 import BeautifulSoup
 from urllib import parse
-from page_loader.saving import save
-from page_loader.naming import make_name
+
+from bs4 import BeautifulSoup
+from progress.spinner import PixelSpinner as Spinner
+
 from page_loader.logging import setup_logging
+from page_loader.naming import make_name
+from page_loader.saving import save
 
 RESOURCES = {
     "img": "src",
@@ -16,27 +19,34 @@ setup_logging()
 
 
 def get_local_resources(html_path, directory, url):
-    domain = get_domain(url)
     soup = make_soup(html_path)
+    spinner = Spinner("Downloading resources ")
     for resource in RESOURCES.keys():
         tags = soup.find_all(resource)
         attr = RESOURCES[resource]
-        get_resource(tags, attr, domain, directory)
-
+        get_resource(tags, attr, url, directory)
+        spinner.next()
+    spinner.finish()
     return soup.prettify(formatter="html5")
 
 
-def get_resource(tags, attr, domain, directory):
+def get_resource(tags, attr, url, directory):
+
     for tag in tags:
         link = tag.get(attr)
-        normal_link = normalize_link(link, domain)
-        if not is_local(normal_link, domain):
+        if not link:
             continue
         else:
-            path, rel_path = make_file_path(normal_link, directory)
-            save(normal_link, path)
-            logging.info(f"{normal_link} was successfully downloaded into '{rel_path}'")  # noqa: E501
-            tag[attr] = rel_path
+            normal_link = normalize_link(link, url)
+            if not is_local(normal_link, url):
+                continue
+            else:
+                path, rel_path = make_file_path(normal_link, directory)
+                save(normal_link, path)
+                logging.info(
+                    f"{normal_link} was successfully downloaded into '{rel_path}'"  # noqa: E501
+                )
+                tag[attr] = rel_path
     return tags
 
 
@@ -53,15 +63,20 @@ def make_soup(doc_path):
     return soup
 
 
-def normalize_link(url, domain):
-    parsed_url = parse.urlparse(url)
-    if not parsed_url.scheme and not parsed_url.netloc:
-        return parse.urljoin(domain, url)
-    return url
+def normalize_link(link, page_url):
+    domain = get_domain(page_url)
+    parsed_url = parse.urlparse(link)
+    without_domain = not parsed_url.scheme and not parsed_url.netloc
+    if without_domain and parsed_url.path.startswith("/"):
+        return parse.urljoin(domain, link)
+    elif without_domain and not parsed_url.path.startswith("/"):
+        return parse.urljoin(page_url, link)
+    return link
 
 
-def is_local(url, ref_domain):
+def is_local(url, ref_url):
     url_domain = get_domain(url)
+    ref_domain = get_domain(ref_url)
     if url_domain == ref_domain:
         return True
     return False
