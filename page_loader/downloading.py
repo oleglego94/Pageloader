@@ -1,12 +1,13 @@
 import logging
 import os
+
 from page_loader import io
-from page_loader.logging import setup_logging
 from page_loader.cli import DEFAULT_DIR
+from page_loader.io import create_directory
+from page_loader.logging import setup_logging
 from page_loader.naming import make_name
 from page_loader.resources import get_local_resources
 from page_loader.saving import save
-from page_loader.io import create_directory
 
 setup_logging()
 

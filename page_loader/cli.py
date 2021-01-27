@@ -1,5 +1,6 @@
 import argparse
 import os
+
 import pkg_resources
 
 VERSION = pkg_resources.get_distribution("hexlet_code").version

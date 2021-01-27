@@ -11,24 +11,32 @@ def test_get_domain():
 
 
 @pytest.mark.parametrize(
-    "url, domain, result",
+    "link, page_url, result",
     [
         (
-            "https:///assets/menu.css",
-            DOMAIN,
-            "https:///assets/menu.css",
+            "https://test.com/blog/about/photos/me.jpg",
+            "https://site.com/blog/about",
+            "https://test.com/blog/about/photos/me.jpg",
         ),
-        ("//test.com/v3/", DOMAIN, "//test.com/v3/"),
-        ("/packs/runtime.js", DOMAIN, "http://test.com/packs/runtime.js"),
         (
-            "http://test.com/professions/nodejs",
-            DOMAIN,
-            "http://test.com/professions/nodejs",
+            "//test.com/v3/",
+            "https://test.com/v3/",
+            "//test.com/v3/"
+        ),
+        (
+            "/packs/runtime.js",
+            "http://test.com/courses/",
+            "http://test.com/packs/runtime.js",
+        ),
+        (
+            "professions/nodejs/script.js",
+            "http://test.com/courses/",
+            "http://test.com/courses/professions/nodejs/script.js",
         ),
     ],
 )
-def test_normalize_link(url, domain, result):
-    assert resources.normalize_link(url, domain) == result
+def test_normalize_link(link, page_url, result):
+    assert resources.normalize_link(link, page_url) == result
 
 
 @pytest.mark.parametrize(

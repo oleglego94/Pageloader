@@ -1,7 +1,10 @@
 import logging
 import sys
-from page_loader.cli import get_parser
+
+from requests.exceptions import ConnectionError, HTTPError
+
 from page_loader import download
+from page_loader.cli import get_parser
 from page_loader.logging import setup_logging
 
 
@@ -11,7 +14,7 @@ def main():
         logging.info("Start downloading")
         args = get_parser()
         path = download(args.url, args.output)
-    except Exception as error:
+    except (OSError, PermissionError, HTTPError, ConnectionError) as error:
         logging.error(f"{error}")
         sys.exit(1)
     else:
