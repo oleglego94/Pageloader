@@ -19,18 +19,16 @@ Arguments:
   url                   download page address
 
 Options:
-  -V, --version         output the version number
   -o [dir], --output [dir]
                         output dir (default: "/home/oleg_g/python-project-lvl3")
+  -v {info,debug}, --verbose {info,debug}
+                        display verbose log
+  -V, --version         output the version number
   -h, --help            display help for command
   ```
-# Download page 
-[![asciicast](https://asciinema.org/a/nx8ZSJkU89uLF9wEpMGx2s1qb.svg)](https://asciinema.org/a/nx8ZSJkU89uLF9wEpMGx2s1qb)
-# Download page and resources
-[![asciicast](https://asciinema.org/a/t8l29tCN8NpNafAt8Taes6tO4.svg)](https://asciinema.org/a/t8l29tCN8NpNafAt8Taes6tO4)
+# Download page with resources
+[![asciicast](https://asciinema.org/a/i4SviNQKdRUZ2fXYP9jgxrSYT.svg)](https://asciinema.org/a/i4SviNQKdRUZ2fXYP9jgxrSYT)
 # Logging
-[![asciicast](https://asciinema.org/a/xBd5LzrS01LSHEvk7OYhpq2lg.svg)](https://asciinema.org/a/xBd5LzrS01LSHEvk7OYhpq2lg)
+[![asciicast](https://asciinema.org/a/7rfgsT1KdcEgAHDMqSdEBd2Kw.svg)](https://asciinema.org/a/7rfgsT1KdcEgAHDMqSdEBd2Kw)
 # Error Handling
-[![asciicast](https://asciinema.org/a/RyKaNG1fIuP3dqyY8d7Nw0Mei.svg)](https://asciinema.org/a/RyKaNG1fIuP3dqyY8d7Nw0Mei)
-# Progress Snippet
-[![asciicast](https://asciinema.org/a/KOCy4GhNSQi4OMvpyNa2xuaMq.svg)](https://asciinema.org/a/KOCy4GhNSQi4OMvpyNa2xuaMq)
+[![asciicast](https://asciinema.org/a/bU78CtUSa6NF9bLdLh7g7dzIV.svg)](https://asciinema.org/a/bU78CtUSa6NF9bLdLh7g7dzIV)

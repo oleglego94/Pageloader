@@ -32,7 +32,7 @@ def set_parser():
         "-v",
         "--verbose",
         choices={"info", "debug"},
-        help="displays verbose log",
+        help="display verbose log",
     )
     options_group.add_argument(
         "-V",
