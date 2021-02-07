@@ -22,7 +22,7 @@ package-uninstall:
 	pip3 uninstall dist/*.whl
 
 beautiful:
-	poetry run black /home/oleg_g/python-project-lvl3/page_loader
-	poetry run isort /home/oleg_g/python-project-lvl3/page_loader
+	poetry run black /home/oleg_g/python-project-lvl3/page_loader /home/oleg_g/python-project-lvl3/tests
+	poetry run isort /home/oleg_g/python-project-lvl3/page_loader /home/oleg_g/python-project-lvl3/tests
 
 .PHONY: install test lint selfcheck check build package-install delete-build
