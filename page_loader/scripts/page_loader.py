@@ -1,25 +1,30 @@
-import logging
+import logging as log
 import sys
 
-from requests.exceptions import ConnectionError, HTTPError
+from requests.exceptions import RequestException
 
-from page_loader import download
-from page_loader.cli import get_parser
-from page_loader.logging import setup_logging
+from page_loader import cli, download
+from page_loader.logging import set_logging
 
 
 def main():
+    args = cli.set_parser()
+
+    if args.verbose == "info":
+        set_logging(log.INFO)
+    elif args.verbose == "debug":
+        set_logging(log.DEBUG)
+    else:
+        set_logging(log.WARNING)
+
     try:
-        setup_logging()
-        logging.info("Start downloading")
-        args = get_parser()
         path = download(args.url, args.output)
-    except (OSError, PermissionError, HTTPError, ConnectionError) as error:
-        logging.error(f"{error}")
+    except (OSError, RequestException) as error:
+        log.error(f"{error}")
         sys.exit(1)
     else:
-        print(f"Page was successfully downloaded into '{path}'")
-        logging.info("Finish downloading")
+        print(f"\u2714 Page was successfully downloaded into '{path}'")
+        log.info("Successfully downloaded")
 
 
 if __name__ == "__main__":
