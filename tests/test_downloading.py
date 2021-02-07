@@ -1,101 +1,117 @@
-import pytest
 import os
-import requests_mock
-import requests.exceptions as RequestException
 from tempfile import TemporaryDirectory
-from page_loader import io
-from page_loader.downloading import download_page, download_resources
+
+import pytest
+import requests.exceptions
+import requests_mock
+
+from page_loader import download, downloading
 
 URL = "http://test.com"
-URL_content = io.read_file("tests/fixtures/test_page.html")
-css_url = "http://test.com/assets/application.css"
-css_content = io.read_file("tests/fixtures/files/test.css")
-html_url = "http://test.com/courses"
-html_content = io.read_file("tests/fixtures/files/test.html")
-png_url = "http://test.com/assets/professions/nodejs.png"
-png_content = io.read_file("tests/fixtures/files/test.png")
-js_url = "http://test.com/packs/js/runtime.js"
-js_content = io.read_file("tests/fixtures/files/test.js")
-
-RESOURCES = {
-    URL: URL_content,
-    css_url: css_content,
-    html_url: html_content,
-    png_url: png_content,
-    js_url: js_content,
-}
 
 
-def test_download_page_():
+def test_download_with_local_resources(
+    open_with_local_resources,
+    open_with_changed_paths,
+    open_test_css,
+    open_test_html,
+    open_test_js,
+    open_test_png,
+):
+    mocks = {
+        URL: open_with_local_resources,
+        "http://test.com/assets/application.css": open_test_css,
+        "http://test.com/courses": open_test_html,
+        "http://test.com/assets/professions/nodejs.png": open_test_png,
+        "http://test.com/packs/js/runtime.js": open_test_js,
+    }
+
     with TemporaryDirectory() as tempdir:
         with requests_mock.Mocker() as mock:
-            mock.get(URL, text="test")
-            page_path = download_page(URL, tempdir)
-        assert os.path.exists(page_path) is True
-        assert page_path.endswith(".html") is True
-
-
-def test_download_resources():
-    with TemporaryDirectory() as tempdir:
-        with requests_mock.Mocker() as mock:
-            for url, content in RESOURCES.items():
+            for url, content in mocks.items():
                 if isinstance(content, bytes):
                     mock.get(url, content=content)
                 else:
                     mock.get(url, text=content)
-            page_path = download_page(URL, tempdir)
-            resources_path = download_resources(page_path, URL, tempdir)
+            received_html_path = download("http://test.com", tempdir)
+            dir_path = os.path.join(tempdir, "test-com_files")
+            received_resource_list = sorted(os.listdir(dir_path))
+        assert received_html_path == f"{tempdir}/test-com.html"
+        assert received_resource_list == [
+            "test-com-assets-application.css",
+            "test-com-assets-professions-nodejs.png",
+            "test-com-courses.html",
+            "test-com-packs-js-runtime.js",
+        ]
 
-        assert os.path.exists(resources_path) is True
-        assert resources_path.endswith("_files") is True
+        with open(received_html_path, "r") as received:
+            assert received.read() == open_with_changed_paths
 
-        with open(page_path, "r") as modified_html, open(
-            "tests/fixtures/modified_test_page.html", "r"
-        ) as sample:
-            assert modified_html.read() == sample.read()
+        with open(
+            f"{dir_path}/test-com-assets-application.css", "r"
+        ) as received:  # noqa: E501
+            assert received.read() == open_test_css
+
+        with open(
+            f"{dir_path}/test-com-assets-professions-nodejs.png", "rb"
+        ) as received:
+            assert received.read() == open_test_png
+
+        with open(f"{dir_path}/test-com-courses.html", "r") as received:
+            assert received.read() == open_test_html
+
+        with open(f"{dir_path}/test-com-packs-js-runtime.js", "r") as received:
+            assert received.read() == open_test_js
 
 
-def test_download_page_in_unfound_directory():
+def test_download_not_full_list_of_resources(open_test_css, open_test_js):
+    with TemporaryDirectory() as tempdir:
+        resources = {
+            "http://test.com/assets/application.css": "",
+            "https://httpbin.org/status/404": f"{tempdir}/test-com-courses.html",  # noqa: E501
+            "http://test.com/packs/js/runtime.js": f"{tempdir}/test-com-packs-js-runtime.js",  # noqa: E501
+        }
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                "http://test.com/assets/application.css",
+                text=open_test_css,
+            )
+            mock.get("https://httpbin.org/status/404", status_code=404)
+            mock.get("http://test.com/packs/js/runtime.js", text=open_test_js)
+
+            downloading.download_resources(resources)
+
+        received_resource_list = sorted(os.listdir(tempdir))
+        assert received_resource_list == ["test-com-packs-js-runtime.js"]
+
+
+def test_download_in_found_directory():
     with requests_mock.Mocker() as mock:
         mock.get(URL, text="test")
         with pytest.raises(OSError):
-            download_page(URL, "some/path")
+            download(URL, "some/path")
 
 
-def test_download_page_with_code_404():
+def test_download_with_code_not_ok():
     with TemporaryDirectory() as tempdir:
         with requests_mock.Mocker() as mock:
             mock.get(URL, status_code=404)
-            with pytest.raises(RequestException.HTTPError):
-                download_page(URL, tempdir)
+            with pytest.raises(requests.exceptions.HTTPError):
+                download(URL, tempdir)
 
 
 def test_download_page_with_no_connection():
     with TemporaryDirectory() as tempdir:
         with requests_mock.Mocker() as mock:
-            mock.get(URL, exc=RequestException.ConnectionError)
-            with pytest.raises(RequestException.ConnectionError):
-                download_page(URL, tempdir)
+            mock.get(URL, exc=requests.exceptions.ConnectionError)
+            with pytest.raises(requests.exceptions.ConnectionError):
+                download(URL, tempdir)
 
 
-def test_download_page_with_existing_name():
+def test_download_with_existing_name():
     with TemporaryDirectory() as tempdir:
         with requests_mock.Mocker() as mock:
             mock.get(URL, text="text")
-            with pytest.raises(OSError):
-                download_page(URL, tempdir)
-                download_page(URL, tempdir)
-
-
-def test_download_resources_with_existing_directory():
-    with TemporaryDirectory() as tempdir:
-        with requests_mock.Mocker() as mock:
-            for url, content in RESOURCES.items():
-                if isinstance(content, bytes):
-                    mock.get(url, content=content)
-                else:
-                    mock.get(url, text=content)
-            with pytest.raises(OSError):
-                page_path = download_page(URL, tempdir)
-                download_resources(page_path, URL, tempdir)
-                download_resources(page_path, URL, tempdir)
+            download(URL, tempdir)
+            with pytest.raises(FileExistsError):
+                download(URL, tempdir)
