@@ -1,4 +1,5 @@
 import os
+import stat
 from tempfile import TemporaryDirectory
 
 import pytest
@@ -113,5 +114,14 @@ def test_download_with_existing_name():
         with requests_mock.Mocker() as mock:
             mock.get(URL, text="text")
             download(URL, tempdir)
+            with pytest.raises(errors.SavingError):
+                download(URL, tempdir)
+
+
+def test_download_permission_denied():
+    with TemporaryDirectory() as tempdir:
+        with requests_mock.Mocker() as mock:
+            mock.get(URL, text="text")
+            os.chmod(tempdir, stat.S_IRUSR)
             with pytest.raises(errors.SavingError):
                 download(URL, tempdir)
