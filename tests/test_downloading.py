@@ -5,7 +5,7 @@ import pytest
 import requests.exceptions
 import requests_mock
 
-from page_loader import download, downloading
+from page_loader import download, downloading, errors
 
 URL = "http://test.com"
 
@@ -85,10 +85,10 @@ def test_download_not_full_list_of_resources(open_test_css, open_test_js):
         assert received_resource_list == ["test-com-packs-js-runtime.js"]
 
 
-def test_download_in_found_directory():
+def test_download_in_unfound_directory():
     with requests_mock.Mocker() as mock:
         mock.get(URL, text="test")
-        with pytest.raises(OSError):
+        with pytest.raises(errors.SavingError):
             download(URL, "some/path")
 
 
@@ -96,7 +96,7 @@ def test_download_with_code_not_ok():
     with TemporaryDirectory() as tempdir:
         with requests_mock.Mocker() as mock:
             mock.get(URL, status_code=404)
-            with pytest.raises(requests.exceptions.HTTPError):
+            with pytest.raises(errors.DownloadingError):
                 download(URL, tempdir)
 
 
@@ -104,7 +104,7 @@ def test_download_page_with_no_connection():
     with TemporaryDirectory() as tempdir:
         with requests_mock.Mocker() as mock:
             mock.get(URL, exc=requests.exceptions.ConnectionError)
-            with pytest.raises(requests.exceptions.ConnectionError):
+            with pytest.raises(errors.DownloadingError):
                 download(URL, tempdir)
 
 
@@ -113,5 +113,5 @@ def test_download_with_existing_name():
         with requests_mock.Mocker() as mock:
             mock.get(URL, text="text")
             download(URL, tempdir)
-            with pytest.raises(FileExistsError):
+            with pytest.raises(errors.SavingError):
                 download(URL, tempdir)

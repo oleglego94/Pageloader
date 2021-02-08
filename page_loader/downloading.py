@@ -4,7 +4,7 @@ import os
 import requests
 from progress.bar import PixelBar
 
-from page_loader import dom, storage, url
+from page_loader import dom, errors, storage, url
 from page_loader.cli import DEFAULT_OUTPUT
 
 
@@ -15,11 +15,11 @@ def download(page_url, output=DEFAULT_OUTPUT):
 
     html_path = os.path.join(output, url.to_file_name(page_url, ".html"))
     if os.path.exists(html_path):
-        raise FileExistsError(f"File exists: '{html_path}'")
+        raise errors.SavingError(f"SavingError: '{html_path}' exists")
 
     dir_path = os.path.join(output, url.to_dir_name(page_url))
     if os.path.exists(dir_path):
-        raise FileExistsError(f"Directory exists: '{dir_path}'")
+        raise errors.SavingError(f"SavingError: '{dir_path}' exists")
 
     html_handled, resources = dom.handle_html(html, page_url, dir_path)
     log.info("Saving page")
@@ -31,6 +31,7 @@ def download(page_url, output=DEFAULT_OUTPUT):
         log.debug("Directory created")
         log.info("Downloading resources")
         download_resources(resources)
+
     return html_path
 
 
@@ -39,9 +40,8 @@ def load(link):
         response = requests.get(link)
         response.raise_for_status()
         return response.text if response.encoding else response.content
-
-    except requests.exceptions.RequestException:
-        raise
+    except requests.exceptions.RequestException as e:
+        raise errors.DownloadingError(f"{e} while downloading {link}") from e
 
 
 def download_resources(resources: dict):
@@ -53,14 +53,14 @@ def download_resources(resources: dict):
             try:
                 content = load(resource_url)
                 log.debug(f"{resource_url} downloaded")
-            except requests.exceptions.RequestException:
+            except errors.DownloadingError:
                 log.warning(f"{resource_url} not downloaded")
             else:
                 path = os.path.abspath(resource_path)
                 try:
                     storage.save(content, path)
                     log.debug(f"'{resource_path}' saved")
-                except OSError:
+                except errors.SavingError:
                     log.warning(f"'{resource_path}' not saved")
                 finally:
                     bar.next()

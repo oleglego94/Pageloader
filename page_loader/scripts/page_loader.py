@@ -1,10 +1,11 @@
 import logging as log
 import sys
 
-from requests.exceptions import RequestException
-
-from page_loader import cli, download
+from page_loader import cli, download, errors
 from page_loader.logging import set_logging
+
+EXIT_OK = 0
+EXIT_ERROR = 1
 
 
 def main():
@@ -19,12 +20,13 @@ def main():
 
     try:
         path = download(args.url, args.output)
-    except (OSError, RequestException) as error:
+    except errors.KnownError as error:
         log.error(f"{error}")
-        sys.exit(1)
+        sys.exit(EXIT_ERROR)
     else:
         print(f"\u2714 Page was successfully downloaded into '{path}'")
         log.info("Successfully downloaded")
+        sys.exit(EXIT_OK)
 
 
 if __name__ == "__main__":

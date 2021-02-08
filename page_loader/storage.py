@@ -1,6 +1,6 @@
 import os
 
-from page_loader import url
+from page_loader import errors, url
 
 
 def save(content, path):
@@ -9,17 +9,18 @@ def save(content, path):
             mode = "wb"
         else:
             mode = "w"
+
         with open(path, mode) as f:
             f.write(content)
-    except OSError:
-        raise
+    except OSError as e:
+        raise errors.SavingError(f"{e} while saving '{path}'") from e
 
 
 def create_directory(path):
     try:
         os.mkdir(path)
-    except OSError:
-        raise
+    except OSError as e:
+        raise errors.SavingError(f"{e} while creating '{path}'") from e
 
 
 def make_file_path(link, dir_path):
