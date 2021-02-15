@@ -21,7 +21,7 @@ def download(page_url, output=DEFAULT_OUTPUT):
     if os.path.exists(dir_path):
         raise errors.SavingError(f"SavingError: '{dir_path}' exists")
 
-    html_handled, resources = dom.handle_html(html, page_url, dir_path)
+    html_handled, resources = dom.prepare_html(html, page_url, dir_path)
     log.info("Saving page")
     storage.save(html_handled, os.path.abspath(html_path))
     log.debug("Handled HTML saved")
@@ -41,26 +41,23 @@ def load(link):
         response.raise_for_status()
         return response.text if response.encoding else response.content
     except requests.exceptions.RequestException as e:
+        log.error(f"{link} not downloaded")
         raise errors.DownloadingError(f"{e} while downloading {link}") from e
 
 
 def download_resources(resources: dict):
-    with PixelBar(
-        "\U0001F4E5 Downloading resources",
-        max=len(resources),
-    ) as bar:
-        for resource_url, resource_path in resources.items():
-            try:
-                content = load(resource_url)
-                log.debug(f"{resource_url} downloaded")
-            except errors.DownloadingError:
-                log.warning(f"{resource_url} not downloaded")
-            else:
-                path = os.path.abspath(resource_path)
-                try:
-                    storage.save(content, path)
-                    log.debug(f"'{resource_path}' saved")
-                except errors.SavingError:
-                    log.warning(f"'{resource_path}' not saved")
-                finally:
-                    bar.next()
+    bar = PixelBar("\U0001F4E5 Downloading resources", max=len(resources))
+    for resource_url, resource_path in resources.items():
+        try:
+            path = os.path.abspath(resource_path)
+
+            content = load(resource_url)
+            log.debug(f"{resource_url} downloaded")
+
+            storage.save(content, path)
+            log.debug(f"'{resource_path}' saved")
+        except (errors.DownloadingError, errors.SavingError):
+            pass
+        finally:
+            bar.next()
+    bar.finish()

@@ -11,12 +11,10 @@ EXIT_ERROR = 1
 def main():
     args = cli.set_parser()
 
-    if args.verbose == "info":
-        set_logging(log.INFO)
-    elif args.verbose == "debug":
+    if args.verbose == "debug":
         set_logging(log.DEBUG)
     else:
-        set_logging(log.WARNING)
+        set_logging(log.INFO)
 
     try:
         path = download(args.url, args.output)

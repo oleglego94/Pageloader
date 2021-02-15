@@ -1,3 +1,4 @@
+import os
 import re
 from urllib import parse
 
@@ -43,3 +44,14 @@ def get_origin(url):
     if not scheme and not host:
         return ""
     return f"{scheme}://{host}"
+
+
+def make_file_path(link, dir_path):
+    path, ext = os.path.splitext(link)
+    if not ext:
+        ext = ".html"
+    file_name = to_file_name(path, ext)
+    path = os.path.join(dir_path, file_name)
+    _, directory = os.path.split(dir_path)
+    rel_path = os.path.join(directory, file_name)
+    return path, rel_path
