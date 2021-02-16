@@ -9,9 +9,9 @@ from page_loader.cli import DEFAULT_OUTPUT
 
 
 def download(page_url, output=DEFAULT_OUTPUT):
-    log.info("Downloading page")
+    log.info(f"Loading page {page_url}")
     html = load(page_url)
-    log.debug(f"{page_url} downloaded")
+    log.debug(f"{page_url} loaded")
 
     html_path = os.path.join(output, url.to_file_name(page_url, ".html"))
     if os.path.exists(html_path):
@@ -22,14 +22,14 @@ def download(page_url, output=DEFAULT_OUTPUT):
         raise errors.SavingError(f"SavingError: '{dir_path}' exists")
 
     html_handled, resources = dom.prepare_html(html, page_url, dir_path)
-    log.info("Saving page")
+    log.info(f"Saving page '{html_path}'")
     storage.save(html_handled, os.path.abspath(html_path))
-    log.debug("Handled HTML saved")
+    log.debug("HTML '{html_path}' saved")
 
     if resources:
         storage.create_directory(dir_path)
-        log.debug("Directory created")
-        log.info("Downloading resources")
+        log.debug(f"Directory '{dir_path}' created")
+        log.info(f"Downloading resources from {page_url}")
         download_resources(resources)
 
     return html_path
@@ -41,8 +41,10 @@ def load(link):
         response.raise_for_status()
         return response.text if response.encoding else response.content
     except requests.exceptions.RequestException as e:
-        log.error(f"{link} not downloaded")
-        raise errors.DownloadingError(f"{e} while downloading {link}") from e
+        log.error(f"{link} not loaded")
+        cause_info = (e.__class__, e, e.__traceback__)
+        log.debug(str(e), exc_info=cause_info)
+        raise errors.DownloadingError(f"{e} while loading {link}") from e
 
 
 def download_resources(resources: dict):
@@ -52,7 +54,7 @@ def download_resources(resources: dict):
             path = os.path.abspath(resource_path)
 
             content = load(resource_url)
-            log.debug(f"{resource_url} downloaded")
+            log.debug(f"{resource_url} loaded")
 
             storage.save(content, path)
             log.debug(f"'{resource_path}' saved")

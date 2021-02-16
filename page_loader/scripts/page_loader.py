@@ -23,7 +23,7 @@ def main():
         sys.exit(EXIT_ERROR)
     else:
         print(f"\u2714 Page was successfully downloaded into '{path}'")
-        log.info("Successfully downloaded")
+        log.info("Page with resources were successfully downloaded")
         sys.exit(EXIT_OK)
 
 
