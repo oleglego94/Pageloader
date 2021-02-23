@@ -26,7 +26,7 @@ def set_parser():
         type=str,
         metavar="[dir]",
         default=DEFAULT_OUTPUT,
-        help=f'output dir (default: current directory)',
+        help='output dir (default: current directory)',
     )
     options_group.add_argument(
         "-v",
