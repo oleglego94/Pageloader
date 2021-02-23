@@ -20,8 +20,8 @@ Arguments:
 
 Options:
   -o [dir], --output [dir]
-                        output dir (default: "/home/oleg_g/python-project-lvl3")
-  -v {info,debug}, --verbose {info,debug}
+                        output dir (default: current directory)
+  -v {debug,info}, --verbose {debug,info}
                         display verbose log
   -V, --version         output the version number
   -h, --help            display help for command
