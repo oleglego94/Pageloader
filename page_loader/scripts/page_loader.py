@@ -13,8 +13,10 @@ def main():
 
     if args.verbose == "debug":
         set_logging(log.DEBUG)
-    else:
+    elif args.verbose == "info":
         set_logging(log.INFO)
+    else:
+        set_logging(log.WARNING)
 
     try:
         path = download(args.url, args.output)
